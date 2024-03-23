@@ -1,5 +1,5 @@
 from utils.plots import Annotator, colors
-from yolo8medium_infer import obj_detect
+from yolo8med_infer import obj_detect
 from yolov8nano_infer import text_detection 
 from parseq_infer import init_model, recognize
 import torch
