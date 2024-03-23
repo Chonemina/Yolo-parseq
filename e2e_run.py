@@ -7,8 +7,8 @@ from PIL import Image
 import cv2
 
 # Path to the model of Yolov8 and parseq-tiny
-yolo8medium_weights = r"D:\yolov8medium\medium\best.pt"
-yolov8nano_weights = r"D:\YOLOv8nanoTextDe\best.pt"
+yolo8medium_weights = r"./pretrained_model/medium/best.py"
+yolov8nano_weights = r"./pretrained_model/YOLOv8nanoTextDe/best.pt"
 parseq_model = r"./pretrained_model/parseq-tiny-epoch=7-step=298-val_accuracy=99.0909-val_NED=99.0909.pt"
 # path to the image you want to test
 image_source = r"D:\demo-yolo9-parseq\demo-yolo9-parseq\test_set\01.jpg"
@@ -50,7 +50,7 @@ for *xyxy, conf, cls in reversed(det):
         # End truncating here
     if c == 3 :  # change this to "c == 0 or c == 1" if run Yolov9 detect 3 class
         im1 = img.crop(tuple(xy1xy2))
-        im1.save(os.path.join("D:\demo-yolo9-parseq\demo-yolo9-parseq\cut", "test.jpg"))
+        im1.save(os.path.join("r./cut", "test.jpg"))
         det1=text_detection()
         print(det1)
         
