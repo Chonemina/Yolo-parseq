@@ -7,9 +7,9 @@ from pathlib import Path
 
 def text_detection():
 # Load a model
-  model = YOLO('/content/drive/MyDrive/demo-yolo9-parseq/pretrained_model/text_detection.pt')
+  model = YOLO('./pretrained_model/text_detection.pt')
 
-  img_path = "/content/drive/MyDrive/demo-yolo9-parseq/cut/test.jpg"
+  img_path = "./cut/test.jpg"
 
 #change iou and conf following to your best value
   result = model(img_path, batch=1, iou = 0.7, conf = 0.25)

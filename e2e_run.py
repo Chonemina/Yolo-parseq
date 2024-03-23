@@ -11,7 +11,7 @@ yolo8medium_weights = r"./pretrained_model/medium/best.py"
 yolov8nano_weights = r"./pretrained_model/YOLOv8nanoTextDe/best.pt"
 parseq_model = r"./pretrained_model/parseq-tiny-epoch=7-step=298-val_accuracy=99.0909-val_NED=99.0909.pt"
 # path to the image you want to test
-image_source = r"D:\demo-yolo9-parseq\demo-yolo9-parseq\test_set\01.jpg"
+image_source = r"./test_set/01.jpg"
 device = "cpu"
 
 # First, we detect using YOLOv8
@@ -63,5 +63,5 @@ for *xyxy, conf, cls in reversed(det):
       # Next, I draw box and recognized text on the image for visualization
         annotator.box_label(xyxy, label1, color=colors(c, True))
 img = annotator.result()
-save_path = r"D:\demo-yolo9-parseq\demo-yolo9-parseq\test_set"
+save_path = r"./test_set"
 cv2.imwrite(save_path, img)
