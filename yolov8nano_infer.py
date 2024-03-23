@@ -7,7 +7,7 @@ from pathlib import Path
 
 def text_detection():
 # Load a model
-  model = YOLO('./pretrained_model/text_detection.pt')
+  model = YOLO('./pretrained_model/YOLOv8nanoTextDe/best.pt')
 
   img_path = "./cut/test.jpg"
 

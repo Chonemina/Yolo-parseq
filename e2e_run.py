@@ -7,7 +7,7 @@ from PIL import Image
 import cv2
 
 # Path to the model of Yolov8 and parseq-tiny
-yolo8medium_weights = r"./pretrained_model/medium/best.py"
+yolo8medium_weights = r"./pretrained_model/medium/best.pt"
 yolov8nano_weights = r"./pretrained_model/YOLOv8nanoTextDe/best.pt"
 parseq_model = r"./pretrained_model/parseq-tiny-epoch=7-step=298-val_accuracy=99.0909-val_NED=99.0909.pt"
 # path to the image you want to test
