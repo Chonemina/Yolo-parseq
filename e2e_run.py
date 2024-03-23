@@ -51,7 +51,7 @@ for *xyxy, conf, cls in reversed(det):
         # End truncating here
     if c == 3 :  # change this to "c == 0 or c == 1" if run Yolov9 detect 3 class
         im1 = img.crop(tuple(xy1xy2))
-        im1.save(os.path.join("r./cut", "test.jpg"))
+        im1.save(os.path.join(r"./cut", "test.jpg"))
         det1=text_detection()
         print(det1)
         
