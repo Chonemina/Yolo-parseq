@@ -5,6 +5,7 @@ from parseq_infer import init_model, recognize
 import torch
 from PIL import Image
 import cv2
+import os
 
 # Path to the model of Yolov8 and parseq-tiny
 yolo8medium_weights = r"./pretrained_model/medium/best.pt"
