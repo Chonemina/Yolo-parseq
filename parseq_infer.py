@@ -19,7 +19,7 @@ def recognize(model, img, device):
 
 def try_recognize():
     device = "cpu"
-    checkpoint = ".//pretrained_model//parseq-tiny-epoch=9-step=244-val_accuracy=99.0909-val_NED=99.0909.ckpt"
+    checkpoint = "./pretrained_model/parseq-tiny-epoch=9-step=244-val_accuracy=99.0909-val_NED=99.0909.ckpt"
     model = load_from_checkpoint(checkpoint).eval().to(device)
     img_transform = SceneTextDataModule.get_transform(model.hparams.img_size)
     img_dir_path = r".\test_set"
