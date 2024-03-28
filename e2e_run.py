@@ -8,9 +8,9 @@ import cv2
 import json
 # Load a model yolov8
 model_object_detect = YOLO(r'/kaggle/working/Yolo-parseq/pretrained_model/medium/best.pt')
-model_text_detect = YOLO(r".\pretrained_model\YOLOv8nanoTextDe\best.pt")
+model_text_detect = YOLO(r"/kaggle/working/Yolo-parseq/pretrained_model/YOLOv8nanoTextDe/best.pt")
 # test_set is a folder that just contains 30 test images
-test_set = r".\test_set"
+test_set = r"/kaggle/working/Yolo-parseq/test_set"
 imgs = os.listdir(test_set)
 imgs_path = []
 for img in imgs:
@@ -20,7 +20,7 @@ results = model_object_detect(test_set, batch=1, iou = 0.7, conf = 0.25)
 print(len(results))
 
 #path to the parseq model
-parseq_model = r"./pretrained_model/parseq-tiny-epoch=7-step=298-val_accuracy=99.0909-val_NED=99.0909.pt"
+parseq_model = r"/kaggle/working/Yolo-parseq/pretrained_model/parseq-tiny-epoch=7-step=298-val_accuracy=99.0909-val_NED=99.0909.pt"
 
 # Next, we start recognize using parseq
 parseq = init_model(checkpoint=parseq_model, device= "cpu")
@@ -85,8 +85,8 @@ for i,result in enumerate(results):
             res = res.replace(" ", "")
             sum_res.append(res)
     img = annotator.result()
-    img_save_path = r"./test_set/results/" + imgs[i]
-    txt_save_path = r"./test_set/results/" + imgs[i][:-3]+"txt"
+    img_save_path = r"/kaggle/working/Yolo-parseq/test_set/results/" + imgs[i]
+    txt_save_path = r"/kaggle/working/Yolo-parseq/test_set/results/" + imgs[i][:-3]+"txt"
     cv2.imwrite(img_save_path, img)
     with open(txt_save_path, "w") as f:
         f.writelines(sum_res)
