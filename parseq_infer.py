@@ -19,11 +19,11 @@ def recognize(model, img, device):
 
 def try_recognize():
     device = "cpu"
-    checkpoint = "G://Lab//auto_quiz_scoring//yolo_experiment//first_try//code_reg//using_parseq//parseq//pretrained//parseq-tiny-epoch=9-step=244-val_accuracy=99.0909-val_NED=99.0909.ckpt"
+    checkpoint = ".//pretrained_model//parseq-tiny-epoch=9-step=244-val_accuracy=99.0909-val_NED=99.0909.ckpt"
     model = load_from_checkpoint(checkpoint).eval().to(device)
     img_transform = SceneTextDataModule.get_transform(model.hparams.img_size)
-    img_dir_path = r"G:\Lab\auto_quiz_scoring\yolo_experiment\first_try\end-to-end-tech\demo1-yolo-parseq\test_set"
-    predict = r"G:\Lab\auto_quiz_scoring\yolo_experiment\first_try\end-to-end-tech\demo1-yolo-parseq\parseq_infer\result.json"
+    img_dir_path = r".\test_set"
+    predict = r".\test_set\result.json"
     imgs = os.listdir(img_dir_path)
     preds = []
     for img_name in imgs:

@@ -1,68 +1,92 @@
+from ultralytics import YOLO
 from utils.plots import Annotator, colors
-from yolo8med_infer import obj_detect
-from yolov8nano_infer import text_detection 
+import os
 from parseq_infer import init_model, recognize
 import torch
-from PIL import Image
+from PIL import Image, ImageDraw
 import cv2
-import os
+import json
+# Load a model yolov8
+model_object_detect = YOLO(r'.\pretrained_model\medium\best.pt')
+model_text_detect = YOLO(r".\pretrained_model\YOLOv8nanoTextDe\best.pt")
+# test_set is a folder that just contains 30 test images
+test_set = r".\test_set"
+imgs = os.listdir(test_set)
+imgs_path = []
+for img in imgs:
+    imgs_path.append(os.path.join(test_set,img))
+#change iou and conf following to your best value
+results = model_object_detect(test_set, batch=1, iou = 0.7, conf = 0.25)
+print(len(results))
 
-# Path to the model of Yolov8 and parseq-tiny
-yolo8medium_weights = r"./pretrained_model/medium/best.pt"
-yolov8nano_weights = r"./pretrained_model/YOLOv8nanoTextDe/best.pt"
+#path to the parseq model
 parseq_model = r"./pretrained_model/parseq-tiny-epoch=7-step=298-val_accuracy=99.0909-val_NED=99.0909.pt"
-# path to the image you want to test
-image_source = r"./test_set/01.jpg"
-device = "cpu"
 
-# First, we detect using YOLOv8
-det = obj_detect(yolo8medium_weights, source=image_source, device=device)
-# print(det)
-
-img = Image.open(image_source).convert('RGB')
-im0 = img.copy()
-# annotator used for visualize results
-annotator = Annotator(im0, line_width=3, pil=True)
 # Next, we start recognize using parseq
-parseq = init_model(checkpoint=parseq_model, device=device)
+parseq = init_model(checkpoint=parseq_model, device= "cpu")
 
-for *xyxy, conf, cls in reversed(det):
-    xy1xy2 = (torch.tensor(xyxy).view(1, 4)).view(-1).tolist()
-    # print(xy1xy2)
-    c = int(cls)  # integer class
-    if c == 2 :  # change this to "c == 0 or c == 1" if run Yolov9 detect 3 class
-        im1 = img.crop(tuple(xy1xy2))
-        with torch.no_grad():
-            label = recognize(parseq,img=im1,device=device)
-
-        # From here, I change the recognition result to truncate not use information from the result
-        # For example, "A." will be "A", "Question18" will be "18"
-        # But for testing and compute accuracy of 2e2 model, we do not need this part of code
-        # if c == 3:  # change this to "c == 1" if run Yolov9 detect 3 class
-        #     if len(label) > 0:
-        #         label = label[0]
-        # if c == 2:  # change this to "c == 0" if run Yolov9 detect 3 class
-            new_label = ""
-            for char in label:
-                if char.isdigit():
-                    new_label += char
-            label = new_label
-        annotator.box_label(xyxy, label, color=colors(c, True))
-        # End truncating here
-    if c == 3 :  # change this to "c == 0 or c == 1" if run Yolov9 detect 3 class
-        im1 = img.crop(tuple(xy1xy2))
-        im1.save(os.path.join(r"./cut", "test.jpg"))
-        det1=text_detection()
-        print(det1)
-        
-        xy3xy4 = (torch.tensor(det1).view(1, 4)).view(-1).tolist()
-        im2 = im1.crop(tuple(xy3xy4))
-        with torch.no_grad():
-          label1 = recognize(parseq,img=im2,device=device)
-          if len(label1) > 0:
-              label1 = label1[0]
-      # Next, I draw box and recognized text on the image for visualization
-        annotator.box_label(xyxy, label1, color=colors(c, True))
-img = annotator.result()
-save_path = r"./test_set"
-cv2.imwrite(save_path, img)
+for i,result in enumerate(results):
+    sum_res = []
+    img = Image.open(imgs_path[i]).convert('RGB')
+    im0 = img.copy()
+    annotator = Annotator(im0, line_width=3, pil=True)
+    result = json.loads(result.tojson())
+    # print(type(result))
+    for res in result:
+        # print(type(res))
+        xy1xy2 = [res["box"]["x1"],res["box"]["y1"],res["box"]["x2"],res["box"]["y2"]]
+        # print(xy1xy2)
+        c = res["class"]  # integer class
+        # Now we check if the object is selected_ans to infer it in yolov8 text detection
+        if c == 3:  # change this to "c == 1" if run Yolov9 detect 3 class
+            im1 = img.crop(tuple(xy1xy2))
+            text_res = model_text_detect(im1)
+            text_res = json.loads(text_res[0].tojson())
+            best_text_res = None
+            # Maybe the text detection res contain more than one box, we have to find best box
+            if len(text_res) > 1:
+                max_conf = 0
+                for i in range(len(text_res)):
+                    if text_res[i]["confidence"] > max_conf:
+                        best_text_res = text_res[i]
+                        max_conf = text_res[i]["confidence"]
+            elif len(text_res) == 1:
+                best_text_res = text_res[0]
+                print(best_text_res)
+                print("Got text detection!")
+            if best_text_res != None:
+                xy1xy2_text = [best_text_res["box"]["x1"],best_text_res["box"]["y1"],best_text_res["box"]["x2"],best_text_res["box"]["y2"]]
+                im2 = im1.crop(tuple(xy1xy2_text))
+            else:
+                im2 = im1
+            with torch.no_grad():
+                label = recognize(parseq,img=im2,device="cpu")
+                print(label)
+            annotator.box_label(xy1xy2, label, color=colors(c, True))
+            x1 = int(xy1xy2[0])
+            y1 = int(xy1xy2[1])
+            x2 = int(xy1xy2[2])
+            y2 = int(xy1xy2[3])
+            res = str([x1,y1,x2,y1,x2,y2,x1,y2])[1:-1] + "," + label + "\n"
+            res = res.replace(" ", "")
+            sum_res.append(res)
+        # if it is the ques_id object, just crop it and recognize it
+        elif c == 2:
+            im1 = img.crop(tuple(xy1xy2))
+            with torch.no_grad():
+                label = recognize(parseq,img=im1,device="cpu")
+                print(label)
+            annotator.box_label(xy1xy2, label, color=colors(c, True))
+            x1 = int(xy1xy2[0])
+            y1 = int(xy1xy2[1])
+            x2 = int(xy1xy2[2])
+            y2 = int(xy1xy2[3])
+            res = str([x1,y1,x2,y1,x2,y2,x1,y2])[1:-1] + "," + label + "\n"
+            res = res.replace(" ", "")
+            sum_res.append(res)
+    img = annotator.result()
+    img_save_path = r"./test_set/results/" + imgs[i]
+    txt_save_path = r"./test_set/results/" + imgs[i][:-3]+"txt"
+    cv2.imwrite(img_save_path, img)
+    with open(txt_save_path, "w") as f:
+        f.writelines(sum_res)
