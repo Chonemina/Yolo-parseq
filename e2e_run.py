@@ -85,8 +85,8 @@ for i,result in enumerate(results):
             res = res.replace(" ", "")
             sum_res.append(res)
     img = annotator.result()
-    img_save_path = r"/kaggle/working/Yolo-parseq/test_set/results/" + imgs[i]
-    txt_save_path = r"/kaggle/working/Yolo-parseq/test_set/results/" + imgs[i][:-3]+"txt"
+    img_save_path = r"/kaggle/working/Yolo-parseq/test_set" + imgs[i]
+    txt_save_path = r"/kaggle/working/Yolo-parseq/test_set" + imgs[i][:-3]+"txt"
     cv2.imwrite(img_save_path, img)
     with open(txt_save_path, "w") as f:
         f.writelines(sum_res)
