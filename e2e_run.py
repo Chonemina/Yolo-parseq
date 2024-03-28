@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw
 import cv2
 import json
 # Load a model yolov8
-model_object_detect = YOLO(r'.\pretrained_model\medium\best.pt')
+model_object_detect = YOLO(r'/kaggle/working/Yolo-parseq/pretrained_model/medium/best.pt')
 model_text_detect = YOLO(r".\pretrained_model\YOLOv8nanoTextDe\best.pt")
 # test_set is a folder that just contains 30 test images
 test_set = r".\test_set"
