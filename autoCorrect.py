@@ -1,9 +1,9 @@
 #chua cac ham co the hoan thanh tac vu chinh su nhung class con thieu
 #ham tim xem quest_id nao con thieu
-Example="câu 1,câu 2,câu 3,câu 4"
-def lostquest_id(input_string):
+Example=["câu 51","câu 52","câu 54"]
+def lostquest_id(input_list):
     
-
+    input_string= ",".join(input_list)
 # Tách chuỗi thành danh sách các phần tử
     elements = input_string.split(",")
 
