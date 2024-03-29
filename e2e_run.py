@@ -41,6 +41,7 @@ for i,result in enumerate(results):
         #just for autocorrect part 
         questidquantity=0
         fullquestquantity=0
+        sum_label_for_correct=[]
         # Now we check if the object is selected_ans to infer it in yolov8 text detection
         if c == 3:  # change this to "c == 1" if run Yolov9 detect 3 class
             im1 = img.crop(tuple(xy1xy2))
@@ -78,11 +79,16 @@ for i,result in enumerate(results):
         elif c == 2:
             #tim so luong box quest_id:
             questidquantity+=1
+            
             #mainpart
             im1 = img.crop(tuple(xy1xy2))
+
             with torch.no_grad():
                 label = recognize(parseq,img=im1,device="cpu")
                 print(label)
+                #sua them linh tinh
+                sum_label_for_correct.append(label)
+                #het sua linh tinh
             annotator.box_label(xy1xy2, label, color=colors(c, True))
             x1 = int(xy1xy2[0])
             y1 = int(xy1xy2[1])
