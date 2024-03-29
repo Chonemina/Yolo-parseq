@@ -6,6 +6,7 @@ import torch
 from PIL import Image, ImageDraw
 import cv2
 import json
+from autoCorrect import lostquest_id
 # Load a model yolov8
 model_object_detect = YOLO(r'/kaggle/working/Yolo-parseq/pretrained_model/medium/best.pt')
 model_text_detect = YOLO(r"/kaggle/working/Yolo-parseq/pretrained_model/YOLOv8nanoTextDe/best.pt")
@@ -37,6 +38,9 @@ for i,result in enumerate(results):
         xy1xy2 = [res["box"]["x1"],res["box"]["y1"],res["box"]["x2"],res["box"]["y2"]]
         # print(xy1xy2)
         c = res["class"]  # integer class
+        #just for autocorrect part 
+        questidquantity=0
+        fullquestquantity=0
         # Now we check if the object is selected_ans to infer it in yolov8 text detection
         if c == 3:  # change this to "c == 1" if run Yolov9 detect 3 class
             im1 = img.crop(tuple(xy1xy2))
@@ -58,7 +62,7 @@ for i,result in enumerate(results):
                 xy1xy2_text = [best_text_res["box"]["x1"],best_text_res["box"]["y1"],best_text_res["box"]["x2"],best_text_res["box"]["y2"]]
                 im2 = im1.crop(tuple(xy1xy2_text))
             else:
-                im2 = im1
+                im2 = im1 #if its got no change, just take it
             with torch.no_grad():
                 label = recognize(parseq,img=im2,device="cpu")
                 print(label)
@@ -72,6 +76,9 @@ for i,result in enumerate(results):
             sum_res.append(res)
         # if it is the ques_id object, just crop it and recognize it
         elif c == 2:
+            #tim so luong box quest_id:
+            questidquantity+=1
+            #mainpart
             im1 = img.crop(tuple(xy1xy2))
             with torch.no_grad():
                 label = recognize(parseq,img=im1,device="cpu")
@@ -84,9 +91,17 @@ for i,result in enumerate(results):
             res = str([x1,y1,x2,y1,x2,y2,x1,y2])[1:-1] + "," + label + "\n"
             res = res.replace(" ", "")
             sum_res.append(res)
+        #tim so luong box full_quest
+        if c==0: 
+            fullquestquantity+=1
+            # 
+    if fullquestquantity!=questidquantity lostquest_id(sum_res)
+    else print("Không co cau hoi nao bi detect thieu")
+    #          
     img = annotator.result()
     img_save_path = r"/kaggle/working/Yolo-parseq/test_set" + imgs[i]
     txt_save_path = r"/kaggle/working/Yolo-parseq/test_set" + imgs[i][:-3]+"txt"
     cv2.imwrite(img_save_path, img)
     with open(txt_save_path, "w") as f:
         f.writelines(sum_res)
+        
