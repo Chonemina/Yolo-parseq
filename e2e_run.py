@@ -95,8 +95,8 @@ for i,result in enumerate(results):
         if c==0: 
             fullquestquantity+=1
             # 
-    if fullquestquantity!=questidquantity lostquest_id(sum_res)
-    else print("Không co cau hoi nao bi detect thieu")
+    if fullquestquantity!=questidquantity: lostquest_id(sum_res)
+    else: print("Không co cau hoi nao bi detect thieu")
     #          
     img = annotator.result()
     img_save_path = r"/kaggle/working/Yolo-parseq/test_set" + imgs[i]
