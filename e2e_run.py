@@ -101,7 +101,7 @@ for i,result in enumerate(results):
         if c==0: 
             fullquestquantity+=1
             # 
-    if fullquestquantity!=questidquantity: lostquest_id(sum_res)
+    if fullquestquantity!=questidquantity: lostquest_id(sum_label_for_correct)
     else: print("Không co cau hoi nao bi detect thieu")
     #          
     img = annotator.result()
