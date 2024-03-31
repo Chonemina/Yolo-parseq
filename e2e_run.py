@@ -38,7 +38,7 @@ for i,result in enumerate(results):
     for res in result:
         xy1xy2 = [res["box"]["x1"],res["box"]["y1"],res["box"]["x2"],res["box"]["y2"]]
         c = res["class"]
-        if c==2:
+        if c==1:
             im1=img.crop(tuple(xy1xy2))
             
             sum_full_ans.append(xy1xy2)
@@ -84,24 +84,24 @@ for i,result in enumerate(results):
                 print("Got text detection!")
             if best_text_res != None:
                 xy1xy2_text = [best_text_res["box"]["x1"],best_text_res["box"]["y1"],best_text_res["box"]["x2"],best_text_res["box"]["y2"]]
-                if is_inside(xy1xy2_text,sum_full_ans): 
-                    im2 = im1.crop(tuple(xy1xy2_text))
+                
+                im2 = im1.crop(tuple(xy1xy2_text))
 
             else:
-                if is_inside(xy1xy2,sum_full_ans):
-                    im2 = im1 #if its got no change, just take it
-
-            with torch.no_grad():
-                label = recognize(parseq,img=im2,device="cpu")
-                print(label)
-            annotator.box_label(xy1xy2, label, color=colors(c, True))
-            x1 = int(xy1xy2[0])
-            y1 = int(xy1xy2[1])
-            x2 = int(xy1xy2[2])
-            y2 = int(xy1xy2[3])
-            res = str([x1,y1,x2,y1,x2,y2,x1,y2])[1:-1] + "," + label + "\n"
-            res = res.replace(" ", "")
-            sum_res.append(res)
+                xy1xy2_text=xy1xy2
+                im2 = im1 #if its got no change, just take it
+            if is_inside(xy1xy2_text,sum_full_ans):
+                with torch.no_grad():
+                    label = recognize(parseq,img=im2,device="cpu")
+                    print(label)
+                annotator.box_label(xy1xy2, label, color=colors(c, True))
+                x1 = int(xy1xy2[0])
+                y1 = int(xy1xy2[1])
+                x2 = int(xy1xy2[2])
+                y2 = int(xy1xy2[3])
+                res = str([x1,y1,x2,y1,x2,y2,x1,y2])[1:-1] + "," + label + "\n"
+                res = res.replace(" ", "")
+                sum_res.append(res)
         # if it is the ques_id object, just crop it and recognize it
         elif c == 2:
             #tim so luong box quest_id:
